@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title></title>
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <style>
+    *{
+      padding:0px;
+      margin:0px;
+    }
+    body{
+      background: #EEE;
+      font-size:20px;
+    }
+    .header{
+      display:block;
+      margin: 10px auto 15px auto;
+      height:35px;
+      width:500px;
+      line-height:35px;
+      text-align:center;
+      font-size:25px;
+    }
+    .main{
+      margin: 0px auto;
+      padding:25px;
+      width:570px;
+      height:500px;
+      background:#FFF;
+      box-shadow: 0px 6px 20px 0px;
+      border: #CCC solid 1px;
+      border-radius:5px;
+      position: relative;
+    }
+    .info{
+      display:none;
+      position: absolute;
+      left:200px;
+      top:200px;
+      height:50px;
+      width:210px;
+      padding:15px 25px;
+      border: #CCC solid 1px;
+      border-radius:5px;
+    }
+    .thisbar{
+      display:none;
+      fill: steelblue;
+      opacity: 0.5;
+    }
+    .bar {
+      fill: steelblue;
+    }
+    .axis text {
+      font: 10px sans-serif;
+    }
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+    footer{
+      margin: 10px auto 15px auto;
+      height:35px;
+      width:500px;
+      line-height:35px;
+      text-align:center;
+      font-size:14px;
+    }
+    
+  </style>
+</head>
+<body >
+<h1 class="header">中华人民共和国国内生产总值</h1>
+<div class="main">
+  <div class="info"></div>
+  <svg class="chart"></svg>
+</div>
+<footer>数据来源：<a href="https://data.worldbank.org/indicator/NY.GDP.PCAP.CD">NY.GDP.PCAP.CD</a></footer>
+  <script>
+  d3.csv("GDP.csv",function(error,csvdata){
+      var money=[];
+      var info=[];
+      var max=[];
+      if(error){
+        console.log(error);
+      }
+      
+      for(var i=0;(i+1960)<2017;i++){
+          money[i]=[]
+          money[i][0]=i+1960;
+          money[i][1]=csvdata[0][i+1960];
+          max[i]=parseInt(csvdata[0][i+1960]);
+      }
+      info.push(["city",csvdata[0].CountryName]);
+      info.push(["code",csvdata[0].CountryCode]);
+      info.push(["unit","美元"]);
+      console.log(money);
+      console.log(max);
+
+
+      var width=520;
+      var height=500;
+      var x=d3.scale.linear()
+              .domain([1960,2016])
+              .range([0,width]);
+      var y=d3.scale.linear()
+              .domain([0,d3.max(max)])
+              .range([height,0]);
+      var xAxis = d3.svg.axis()
+                    .scale(x)
+                    .orient("bottom")
+                    .ticks(5);
+      var yAxis = d3.svg.axis()
+                    .scale(y)
+                    .orient("left")
+                    .ticks(10);
+      var svg=d3.select(".chart")
+                .attr("width",width+50)
+                .attr("height",height+50);
+      svg.append("g")
+         .attr("class","x axis")
+         .attr("transform", "translate(50," + height + ")")
+         .call(xAxis);
+      svg.append("g")
+         .attr("class","y axis")
+         .attr("transform", "translate(50)")
+         .call(yAxis);
+      svg.append("text")
+          .attr("x",-90)
+          .attr("y",65)
+          .attr("dy", "0.8em")
+          .attr("transform", "rotate(-90)")
+          .text("万亿美元");
+      svg.append("g")
+         .attr("transform", "translate(51)")
+         .selectAll(".bar")
+         .data(money)
+         .enter()
+         .append("rect")
+         .attr("class","bar")
+         .attr("width",width/money.length)
+         .attr("height",function(d,i){return height-y(money[i][1])})
+         .attr("x",function(d,i){return i*width/money.length})
+         .attr("y",function(d,i){return y(money[i][1])})
+         .on("mouseover",function(d,i){
+            d3.select(this)
+              .style("fill","#CCC");
+            d3.select(".info")
+              .style("display","block")
+              .html("<p>"+money[i][0]+"</p><p>"+money[i][1]+"万亿美元</p>");
+         })
+         .on("mouseout",function(d,i){
+            d3.select(".info")
+              .style("display","none");
+            d3.select(this)
+              .style("fill","steelblue");
+         });
+      
+
+  });
+  
+ /* d3.csv("GDP.csv",function(error,csvdata){   
+        var str = d3.csv.format( csvdata );     
+        console.log(str.length);
+        console.log(str); 
+      });*/
+  </script>
+  <!--
+   
+
+
+
+
+  -->
+</body>
+</html>

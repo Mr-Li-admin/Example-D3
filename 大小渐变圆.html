@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title></title>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <style>
+    
+  </style>
+</head>
+<body >
+  <svg class="chart"></svg>
+  <script>
+  var chart=d3.select(".chart");
+  var circle=chart.append("circle")
+            .attr("cx",90)
+            .attr("cy",80)
+            .attr("style","fill:steelblue")
+            .attr("r",7)
+            .transition()
+            .duration(2000)
+            .attr("r", 17);
+  </script>
+  <!--
+    svg中元素都是绝对定位
+    transition()启动过渡效果
+    duration(2000)过渡的持续时间，单位为毫秒
+    ease()指定过渡的方式，常用的有：
+          linear：普通的线性变化
+          circle：慢慢地到达变换的最终状态
+          elastic：带有弹跳的到达最终状态
+          bounce：在最终状态处弹跳几次
+    delay()指定延迟的时间，表示一定时间后才开始转变，单位同样为毫秒
+
+
+
+
+
+  -->
+</body>
+</html>

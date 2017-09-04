@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title></title>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <style>
+    
+  </style>
+</head>
+<body >
+  <svg class="chart"></svg>
+  <script>
+  var data=[1,2,4,5];
+  var cx=d3.scale.linear()
+        .domain([0,d3.max(data)])
+        .range([0,500])
+  var r=d3.scale.linear()
+        .domain([0,d3.max(data)])
+        .range([0,50])
+  var chart=d3.select(".chart")
+            .attr("width",900);
+  var circle=chart.selectAll("circle")
+            .data(data)
+            .enter().append("circle")
+            .attr("cx",function(d,i){return i*50+cx(d)})
+            .attr("cy",80)
+            .attr("r",function(d){return r(d)})
+            .attr("style","fill:steelblue");
+  </script>
+  <!--
+    svg中元素都是绝对定位
+  -->
+</body>
+</html>

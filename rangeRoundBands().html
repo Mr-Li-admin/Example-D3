@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title></title>
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+	<style>
+		
+	</style>
+</head>
+<body >
+	<div class="chart"></div>
+	<script>
+		var data=["A", "B", "C", "D", "E", "F"];
+		var width=960;
+		var x = d3.scale.ordinal()
+		    .domain(data)
+		    .rangeRoundBands([0, width], .2);//精确到小数点
+		var char=d3.select(".chart");
+		var p=char.selectAll("p");
+		var newp=p.data(data)
+		var div=newp.enter().append("p")
+		div.text(function(d){return x(d);})
+	</script>
+	
+</body>
+</html>

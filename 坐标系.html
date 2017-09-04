@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title></title>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <style>
+    <style>
+      .bar {
+        fill: steelblue;
+      }
+
+      .axis text {
+        font: 10px sans-serif;
+      }
+
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+      }
+
+      /* .x.axis path {
+        display: none;
+      } */
+
+</style>
+
+  </style>
+</head>
+<body >
+  <svg class="chart"></svg>
+  <script>
+    var margin = {top: 20, right: 30, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+    var ydata=[4,8,15,16,23,42];
+    var xdata=["Locke","Reyes","Ford","Jarrah","Shephard","Kwon"];
+    var x = d3.scale.ordinal()
+        .domain(xdata)
+        .rangeRoundBands([0, width], .1);
+    var y = d3.scale.linear()
+        .domain([0,d3.max(ydata)])
+        .range([height,0]);
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom")
+        .ticks(xdata.length);
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .ticks(ydata.length);
+
+    var chart=d3.select(".chart")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      chart.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
+
+      chart.append("g")
+          .attr("class", "y axis")
+          .call(yAxis);
+</script>
+  <!--
+    d3.svg.axis()：D3 中坐标轴的组件，能够在 SVG 中生成组成坐标轴的元素。
+    scale()：指定比例尺。
+    orient()：指定刻度的朝向，bottom 表示在坐标轴的下方显示。
+    ticks()：指定刻度的数量。
+  -->
+</body>
+</html>

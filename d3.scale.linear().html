@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title></title>
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+	<style>
+		.char div {
+			font: 10px sans-serif;
+			background-color: steelblue;
+			text-align: right;
+			padding: 3px;
+			margin: 1px;
+			color: white;
+		}
+	</style>
+</head>
+<body >
+	<div class="char"></div>
+	<script>
+		var datas = [4, 8, 15, 16, 23, 42];
+
+		var x = d3.scale.linear()
+	    		.domain([0, d3.max(datas)])//设置输出域
+	    		.range([0, 420]);//设置输出范围
+
+		var char=d3.select(".char");
+		var allDiv=char.selectAll("div");
+		var upDiv=allDiv.data(datas)
+		var div=upDiv.enter().append("div")
+		div.style("width",function(d){return x(d)+"px";})
+		   .text(function(d){return d;})
+	</script>
+	
+</body>
+</html>

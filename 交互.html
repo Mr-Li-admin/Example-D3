@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title></title>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <style>
+    
+  </style>
+</head>
+<body >
+  <svg class="chart"></svg>
+  <script>
+  var data=[1,2,4,5];
+  var cx=d3.scale.linear()
+        .domain([0,d3.max(data)])
+        .range([0,500])
+  var r=d3.scale.linear()
+        .domain([0,d3.max(data)])
+        .range([0,50])
+  var chart=d3.select(".chart")
+            .attr("width",900);
+  var circle=chart.selectAll("circle")
+            .data(data)
+            .enter().append("circle")
+            .attr("cx",function(d,i){return i*50+cx(d)})
+            .attr("cy",80)
+            .attr("r",function(d){return r(d)})
+            .attr("fill","steelblue")
+            .on("mouseover",function(d,i){
+              d3.select(this)
+                .attr("fill","red");
+            })
+            .on("mouseout",function(d,i){
+              d3.select(this)
+                .transition()
+                .duration(500)
+                .attr("fill","steelblue");
+            })
+  </script>
+  <!--
+    var circle = svg.append("circle"); 
+    circle.on("click", function(){
+        //在这里添加交互内容
+    });
+    鼠标常用的事件有：
+      click：鼠标单击某元素时，相当于 mousedown 和 mouseup 组合在一起。
+      mouseover：光标放在某元素上。
+      mouseout：光标从某元素上移出来时。
+      mousemove：鼠标被移动的时候。
+      mousedown：鼠标按钮被按下。
+      mouseup：鼠标按钮被松开。
+      dblclick：鼠标双击。
+
+    键盘常用的事件有三个：
+      keydown：当用户按下任意键时触发，按住不放会重复触发此事件。该事件不会区分字母的大小写，例如“A”和“a”被视为一致。
+      keypress：当用户按下字符键（大小写字母、数字、加号、等号、回车等）时触发，按住不放会重复触发此事件。该事件区分字母的大小写。
+      keyup：当用户释放键时触发，不区分字母的大小写。
+    
+    触屏常用的事件有三个：
+      touchstart：当触摸点被放在触摸屏上时。
+      touchmove：当触摸点在触摸屏上移动时。
+      touchend：当触摸点从触摸屏上拿开时
+
+    。
+
+
+
+  -->
+</body>
+</html>

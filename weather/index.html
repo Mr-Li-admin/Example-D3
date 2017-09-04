@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title></title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <style>
+    *{
+      padding:0px;
+      margin:0px;
+    }
+    body{
+      background: #EEE;
+      font-size:20px;
+    }
+    .header{
+      display:block;
+      margin: 10px auto 15px auto;
+      height:auto;
+      width:700px;
+      line-height:auto;
+      text-align:center;
+      font-size:25px;
+    }
+    .header>p{
+      font-size:14px;
+      font-weight:normal;
+    }
+    .main{
+      margin: 0px auto;
+      width:1200px;
+      height:650px;
+      background:#FFF;
+      box-shadow: 0px 6px 20px 0px;
+      border: #CCC solid 1px;
+      border-radius:5px;
+      position: relative;
+      padding-bottom:50px; 
+    }
+    .chart{
+      margin:10px auto auto 30px; 
+    }
+    .info{
+      display:none;
+      position: absolute;
+      left:0px;
+      top:0px;
+      height:75px;
+      width:300px;
+      padding:15px 25px;
+      border: #CCC solid 1px;
+      border-radius:5px;
+      background:rgba(0,0,0,0.5);
+    }
+    .axis text {
+      font: 10px sans-serif;
+    }
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+    text {
+      fill: #000;
+      font: 10px sans-serif;
+      text-anchor: end;
+    }
+    rect{
+      cursor: pointer;
+    }
+    footer{
+      margin: 10px auto auto auto;
+      height:35px;
+      width:800px;
+      line-height:35px;
+      text-align:center;
+      font-size:14px;
+    }
+    
+  </style>
+</head>
+<body >
+<h1 class="header">
+  全球地表每月温度（1953-2015）
+  <p>温度为摄氏温度，与1980年1月至1980年12月的平均水平比较</p>
+  <p>估计1951年1月 - 1980年12月绝对温度：8.66 +/- 0.07&nbsp;℃</p>
+</h1>
+<div class="main">
+  <div class="info"></div>
+  <svg class="chart"></svg>
+</div>
+<footer>数据来源：<a href="https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/global-temperature.json">https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/global-temperature.json</a></footer>
+  <script>
+  $.ajax({
+    url:"https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/global-temperature.json",
+    dataType : 'json',
+    type : 'GET',
+    success:function(data){
+      var X=[],number=1953;
+      var Y=["1月份","2月份","3月份","4月份","5月份","6月份","7月份","8月份","9月份","10月份","11月份","12月份"];
+      var mean=data.baseTemperature;
+      var Data=data.monthlyVariance;
+      var N=-1,M=-1;
+      console.log(Data);
+      for(var i=0;i<63;i++){
+        X[i]=number++;
+      }
+      var width=1040;
+      var height=600;
+      var x=d3.scale.linear()
+              .domain([d3.min(X),d3.max(X)])
+              .range([0,width]);
+      var y=d3.scale.ordinal()
+              .domain(Y)
+              .rangeBands([height,0]);
+      var xAxis = d3.svg.axis()
+                    .scale(x)
+                    .orient("bottom");
+      var yAxis = d3.svg.axis()
+                    .scale(y)
+                    .orient("left")
+                    .ticks(12);
+      var svg=d3.select(".chart")
+                .attr("width",width)
+                .attr("height",height+30);
+      svg.append("g")
+         .attr("class","x axis")
+         .attr("transform", "translate(50," + (height+10) + ")")
+         .call(xAxis);
+      svg.append("g")
+         .attr("class","y axis")
+         .attr("transform", "translate(50,10)")
+         .call(yAxis);
+      /*svg.append("text")
+          .attr("x",-20)
+          .attr("y",25)
+          .attr("dy", "0.8em")
+          .attr("transform", "rotate(-90)")
+          .text("月份");*/
+      svg.append("g")
+         .attr("transform","translate(51,10)")
+         .selectAll("rect")
+         .data(Data)
+         .enter()
+         .append("rect")
+         .attr("height",height/12)
+         .attr("width",width/263)
+         .attr("y",function(d,i){return (12-Data[i].month)*height/12})
+         .attr("x",function(d,i){if(Data[i].month==1){N++};return N*width/263;})
+         .attr("fill",function(d,i){return color(mean+Data[i].variance)})
+         .on("mouseover",function(d,i){
+            d3.select(".info")
+              .style("display","block")
+              .style("left",d3.event.pageX-80+"px")
+              .style("top",d3.event.pageY-80+"px")
+              .html("<p>年份："+Data[i].year+"</p><p>偏差："+Data[i].variance+"</p><p>当前温度："+(mean+Data[i].variance)+"</p>");
+         })
+         .on("mouseout",function(d,i){
+            d3.select(".info")
+              .style("display","none");
+         });
+      function color(num){
+        if(num>0 && num<=2.7){
+          return "#5E4FA2";
+        }else if(num>2.7 && num<=3.9){
+          return "#3288BD";
+        }else if(num>3.9 && num<=5){
+          return "#66C2A5";
+        }else if(num>5 && num<=6.1){
+          return "#ABDDA4";
+        }else if(num>6.1 && num<=7.2){
+          return "#E6F598";
+        }else if(num>7.2 && num<=8.3){
+          return "#FFFFBF";
+        }else if(num>8.3 && num<=9.4){
+          return "#FEE08B";
+        }else if(num>9.4 && num<=10.5){
+          return "#FDAE61";
+        }else if(num>10.5 && num<=11.6){
+          return "#F46D43";
+        }else if(num>11.6 && num<=12.7){
+          return "#D53E4F";
+        }else if(num>12.7){
+          return "#9E0142";
+        }
+      }
+         
+    }
+  })
+  
+  </script>
+  
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title></title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <style>
+    *{
+      padding:0px;
+      margin:0px;
+    }
+    body{
+      background: #EEE;
+      font-size:20px;
+    }
+    .header{
+      display:block;
+      margin: 10px auto 15px auto;
+      height:35px;
+      width:700px;
+      line-height:35px;
+      text-align:center;
+      font-size:25px;
+    }
+    .main{
+      margin: 0px auto;
+      padding:25px;
+      width:850px;
+      height:500px;
+      background:#FFF;
+      box-shadow: 0px 6px 20px 0px;
+      border: #CCC solid 1px;
+      border-radius:5px;
+      position: relative;
+    }
+    .info{
+      display:none;
+      position: absolute;
+      left:50px;
+      top:50px;
+      height:170px;
+      width:400px;
+      padding:15px 25px;
+      border: #CCC solid 1px;
+      border-radius:5px;
+    }
+    .thisbar{
+      display:none;
+      fill: steelblue;
+      opacity: 0.5;
+    }
+    .bar {
+      fill: steelblue;
+    }
+    .axis text {
+      font: 10px sans-serif;
+    }
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+    text {
+      fill: #000;
+      font: 10px sans-serif;
+      text-anchor: end;
+    }
+    footer{
+      margin: 10px auto 15px auto;
+      height:35px;
+      width:800px;
+      line-height:35px;
+      text-align:center;
+      font-size:14px;
+    }
+    
+  </style>
+</head>
+<body >
+<h1 class="header">最快穿越阿尔卑斯高地35位赛车手--有多少受兴奋剂影响？</h1>
+<div class="main">
+  <div class="info"></div>
+  <svg class="chart"></svg>
+</div>
+<footer>数据来源：<a href="https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/cyclist-data.json">https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/cyclist-data.json</a></footer>
+  <script>
+  $.ajax({
+    url:"https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/cyclist-data.json",
+    dataType : 'json',
+    type : 'GET',
+    success:function(data){
+      /*console.log(data);*/
+      var X=[],Y=[],N=[];
+      for(var i=0;i<data.length;i++){
+        X[i]=data[i].Time;
+        Y[i]=data[i].Place;
+      }
+      console.log(data)
+      var width=780;
+      var height=500;
+      var x=d3.scale.ordinal()
+              .domain(X)
+              .rangeRoundBands([0, width], .2);
+      var y=d3.scale.linear()
+              .domain([0,d3.max(Y)+2])
+              .range([height,0]);
+      var xAxis = d3.svg.axis()
+                    .scale(x)
+                    .orient("bottom")
+                    .ticks(10)
+      var yAxis = d3.svg.axis()
+                    .scale(y)
+                    .orient("left")
+                    .ticks(5);
+      var svg=d3.select(".chart")
+                .attr("width",width+70)
+                .attr("height",height+70);
+      svg.append("g")
+         .attr("class","x axis")
+         .attr("transform", "translate(20," + height + ")")
+         .call(xAxis);
+      svg.append("g")
+         .attr("class","y axis")
+         .attr("transform", "translate(20)")
+         .call(yAxis);
+      svg.append("text")
+          .attr("x",-20)
+          .attr("y",25)
+          .attr("dy", "0.8em")
+          .attr("transform", "rotate(-90)")
+          .text("名次");
+      svg.selectAll("circle")
+         .data(data)
+         .enter()
+         .append("circle")
+         .attr("cx",function(d,i){return x(X[i])+20})
+         .attr("cy",function(d,i){return y(Y[i])})
+         .attr("r",5)
+         .attr("fill",function(d,i){
+            if(data[i].Doping!==""){
+              return "red";
+            }
+         })
+         .on("mouseover",function(d,i){
+            d3.select(".info")
+              .style("display","block")
+              .html("<p>名次："+i+"</p><p>名字："+data[i].Name+"</p><p>国籍："+data[i].Nationality+"</p><p>记录年份："+data[i].Year+"</p><p>所用时长："+data[i].Time+"</p><p>描述："+data[i].Doping+"<p>");
+         })
+         .on("mouseout",function(d,i){
+            d3.select(".info")
+              .style("display","none");
+         });
+      svg.append("g")
+         .selectAll("text")
+         .data(data)
+         .enter()
+         .append("text")
+         .attr("x",function(d,i){return x(X[i])+8*data[i].Name.length})
+         .attr("y",function(d,i){return y(Y[i])})
+         .attr("dy", ".35em")
+         .text(function(d,i){return data[i].Name});
+      svg.append("g")
+         .append("circle")
+         .attr("cx",700)
+         .attr("cy",400)
+         .attr("r",5)
+         .attr("fill","red");
+      svg.append("g")
+         .append("text")
+         .attr("x",740)
+         .attr("y",403)
+         .text("兴奋剂");
+      svg.append("g")
+         .append("circle")
+         .attr("cx",700)
+         .attr("cy",420)
+         .attr("r",5)
+         .attr("fill","#00");
+      svg.append("g")
+         .append("text")
+         .attr("x",750)
+         .attr("y",423)
+         .text("无兴奋剂");
+         
+    }
+  })
+  
+  </script>
+  
+</body>
+</html>

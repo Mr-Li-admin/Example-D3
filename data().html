@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title></title>
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+</head>
+<body>
+	<p>Apple</p>
+	<p>Pear</p>
+	<p>Banana</p>
+	<script>
+		var dataset = ["I like dogs","I like cats","I like snakes"];
+		var body = d3.select("body");
+		var p = body.selectAll("p");
+		p.data(dataset).text(function(d, i){
+	     	return d;
+	  	});
+	</script>
+	<!-- 
+		data()：绑定一个数组到选择集上，数组的各项值分别与选择集的各元素绑定
+		function(d, i)当选择集需要使用被绑定的数据时，常需要这么使用。
+		当 i == 0 时， d 为 I like dogs。
+		当 i == 1 时， d 为 I like cats。
+		当 i == 2 时， d 为 I like snakes。
+	 -->
+</body>
+</html>

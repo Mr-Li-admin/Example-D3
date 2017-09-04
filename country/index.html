@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title></title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="flags.min.css">
+  <style>
+    *{
+      padding:0px;
+      margin:0px;
+    }
+    body{
+      background: #EEE;
+      font-size:20px;
+    }
+    .header{
+      display:block;
+      margin: 10px auto 15px auto;
+      height:auto;
+      width:700px;
+      line-height:auto;
+      text-align:center;
+      font-size:25px;
+    }
+    .main{
+      margin: 0px auto;
+      width:1200px;
+      height:750px;
+      background:#FFF;
+      box-shadow: 0px 6px 20px 0px;
+      border: #CCC solid 1px;
+      border-radius:5px;
+      position: relative;
+      padding-bottom:50px; 
+    }
+    .chart{
+      margin:10px auto auto 30px;
+      overflow:hidden; 
+    }
+    .info{
+      position:absolute;
+      margin:10px auto auto 30px;
+      width:1140px;
+      height:730px;
+      overflow:hidden; 
+    }
+    .flag{
+      position:absolute;
+    }
+    .text{
+      position: absolute;
+      display:none;
+      height:auto;
+      width:auto;
+      line-height:auto;
+      font-size:10px;
+      background:#EEE;
+      border:#000 solid 1px;
+      border-radius:2px;
+    }
+    
+    footer{
+      margin: 10px auto auto auto;
+      height:35px;
+      width:800px;
+      line-height:35px;
+      text-align:center;
+      font-size:14px;
+    }
+    
+  </style>
+</head>
+<body >
+<h1 class="header">
+  国家联系（强制导图图状态连续性）
+</h1>
+<div class="main">
+  <div class="info"></div>
+  <svg class="chart"></svg>
+  <div class="text"></div>
+</div>
+<footer>数据来源：<a href="https://raw.githubusercontent.com/DealPete/forceDirected/master/countries.json">https://raw.githubusercontent.com/DealPete/forceDirected/master/countries.json</a></footer>
+  <script>
+  $.ajax({
+    url:"https://raw.githubusercontent.com/DealPete/forceDirected/master/countries.json",
+    dataType : 'json',
+    type : 'GET',
+    success:function(data){
+      var nodes=data.nodes;
+      var edges=data.links;
+      /*console.log(edges);*/
+      var width=1140;
+      var height=730;
+      var force = d3.layout.force()
+        .nodes(nodes)   //指定节点数组
+        .links(edges)   //指定连线数组
+        .size([width,height]) //指定范围
+        .linkDistance(100)  //指定连线长度
+        .charge(-100);  //相互之间的作用力
+      /*force.start();  //开始作用*/
+      var svg=d3.select(".chart")
+                .attr("width",width)
+                .attr("height",height);
+      var svg_edges = svg.selectAll("line")
+              .data(edges)
+              .enter()
+              .append("line")
+              .style("stroke","#ccc")
+              .style("stroke-width",1);
+      //添加节点
+      var svg_nodes=d3.select(".info")
+                .selectAll("img")
+                .data(nodes)
+                .enter()
+                .append("img")
+                .attr("src","blank.gif")
+                .attr("class",function(d,i){return "flag flag-"+d.code})
+                .on("mouseover",function(d,i){
+                  d3.select(".text")
+                    .style("display","block")
+                    .style("left",d3.event.pageX-50+"px")
+                    .style("top",d3.event.pageY-65+"px")
+                    .text(d.country);                   
+                })
+                .on("mouseout",function(){
+                  d3.select(".text")
+                    .style("display","none") 
+                })
+                .call(force.drag);
+      //添加描述节点的文字
+      var svg_texts = svg.selectAll("text")
+              .data(nodes)
+              .enter()
+              .append("text")
+              .style("fill", "black")
+              .attr("dx", 20)
+              .attr("dy", 8)
+              .text(function(d){
+                return d.name;
+              });
+      force.on("tick", function(){  //对于每一个时间间隔
+        //更新节点坐标
+       svg_nodes.style("left",function(d){ return d.x-8+"px"; })
+                .style("top",function(d){ return d.y-5+"px"; });
+       //更新连线坐标
+       svg_edges.attr("x1",function(d){ return d.source.x; })
+          .attr("y1",function(d){ return d.source.y; })
+          .attr("x2",function(d){ return d.target.x; })
+          .attr("y2",function(d){ return d.target.y; });
+       
+       
+
+       //更新文字坐标
+       svg_texts.attr("x", function(d){ return d.x; })
+        .attr("y", function(d){ return d.y; });
+    });
+      force.start();  //开始作用
+  
+         
+    }
+  })
+  
+  </script>
+  
+</body>
+</html>
